@@ -34,8 +34,6 @@
         this.editor = editor;
         this.$editDiv = $editDiv;
 
-        window.editor = editor;
-
         this.setupListeners();
     };
 
@@ -160,33 +158,14 @@
                         $buttonRow.find('#wmd-redo-button span').css('background-position', '-220px -20px');
                     }
                 };
-            }()),
-
-            updateUndoRedoButtonState = function () {
-                var t;
-
-                global.clearTimeout(t);
-
-                t = global.setTimeout(function () {
-                    if (editor.getSession().getUndoManager().hasUndo()) {
-                        undoButton.enable();
-                    } else {
-                        undoButton.disable();
-                    }
-
-                    if (editor.getSession().getUndoManager().hasRedo()) {
-                        redoButton.enable();
-                    } else {
-                        redoButton.disable();
-                    }
-                }, 100);
-            };
+            }());
 
         // On editor change update textarea value
         editor.getSession().on('change', function () {
             $textarea.val(editor.getSession().getValue());
             $textarea.trigger('paste');
-            updateUndoRedoButtonState();
+            _this.updateUndoRedoButtonState();
+            _this.prettifyOutput();
         });
 
         // On textarea input update editor value
@@ -276,6 +255,9 @@
                 $('body').off('mousemove', resizeListener);
             });
         }
+
+        this.undoButton = undoButton;
+        this.redoButton = redoButton;
     };
 
     LinkedEditor.prototype.createSelectionFromRange = function () {
@@ -422,6 +404,51 @@
             }
         }
     };
+
+    LinkedEditor.prototype.updateUndoRedoButtonState = (function () {
+        var timer;
+
+        return function () {
+            var _this = this;
+
+            global.clearTimeout(timer);
+
+            timer = global.setTimeout(function () {
+                if (_this.editor.getSession().getUndoManager().hasUndo()) {
+                    _this.undoButton.enable();
+                } else {
+                    _this.undoButton.disable();
+                }
+
+                if (_this.editor.getSession().getUndoManager().hasRedo()) {
+                    _this.redoButton.enable();
+                } else {
+                    _this.redoButton.disable();
+                }
+            }, 100);
+        }
+    }());
+
+    LinkedEditor.prototype.prettifyOutput = (function () {
+        var timer;
+
+        return function () {
+            var $textarea = this.$textarea,
+                $pre = $textarea.closest('.post-editor').find('.wmd-preview pre');
+
+            $pre.each(function () {
+                $(this).attr('class', '');
+            });
+
+            global.clearTimeout(timer);
+
+            timer = global.setTimeout(function () {
+                $pre.each(function () {
+                    $(this).attr('class', 'prettyprint');
+                });
+            }, 2000);
+        };
+    }());
 
     global.LinkedEditor = LinkedEditor;
 }(window, window.jQuery));
