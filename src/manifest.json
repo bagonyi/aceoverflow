@@ -1,0 +1,25 @@
+{
+    "manifest_version": 2,
+    "name": "Ace Overflow",
+    "version": "0.0.1",
+    "description": "Replaces WMD Editor with Ace on all Stack Exchange sites.",
+    "content_scripts": [
+        {
+            "js": ["js/bootstrap.js"],
+            "matches": [
+                "http://*.askubuntu.com/*",
+                "http://*.mathoverflow.net/*",
+                "http://*.onstartups.com/*",
+                "http://*.serverfault.com/*",
+                "http://*.stackapps.com/*",
+                "http://*.stackexchange.com/*",
+                "http://*.stackoverflow.com/*",
+                "http://*.superuser.com/*"
+            ]
+        }
+    ],
+    "web_accessible_resources": [
+        "js/*",
+        "vendor/*"
+    ]
+}
