@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Ace Overflow",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "Replaces WMD Editor with Ace on all Stack Exchange sites.",
     "content_scripts": [
         {

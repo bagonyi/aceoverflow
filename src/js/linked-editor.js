@@ -1,10 +1,12 @@
 ;(function (global, $) {
     'use strict';
 
-    var LinkedEditor = function ($textarea, options) {
+    var STORAGE_KEY_TAB_SIZE = 'aceOverflow:tabSize',
+        LinkedEditor = function ($textarea, options) {
         var config = $.extend(true, {
                 theme: 'textmate',
-                mode: 'markdown'
+                mode: 'markdown',
+                tabSize: global.localStorage[STORAGE_KEY_TAB_SIZE] || 4
             }, options),
 
             $editDiv = $('<div/>', {
@@ -29,6 +31,7 @@
         editor.getSession().setMode('ace/mode/' + config.mode);
         editor.setTheme('ace/theme/' + config.theme);
         editor.getSession().setValue($textarea.val());
+        editor.getSession().setTabSize(config.tabSize);
 
         this.$textarea = $textarea;
         this.editor = editor;
@@ -212,7 +215,7 @@
             this.onclick = null;
         });
 
-        $buttonRow.find('.#wmd-help-button').on('mouseup', function () {
+        $buttonRow.find('#wmd-help-button').on('mouseup', function () {
             $textarea.show();
         });
 
@@ -403,6 +406,21 @@
                 }(i));
             }
         }
+
+        editor.commands.addCommand({
+            name: 'tabSize',
+            bindKey: {
+                win: 'Ctrl-Alt-t',
+                mac: 'Ctrl-Alt-t'
+            },
+            exec: function () {
+                var current = global.localStorage[STORAGE_KEY_TAB_SIZE] || 4,
+                    tabSize = parseInt(global.prompt('Tab size', current));
+
+                global.localStorage[STORAGE_KEY_TAB_SIZE] = tabSize;
+                editor.getSession().setTabSize(tabSize);
+            }
+        })
     };
 
     LinkedEditor.prototype.updateUndoRedoButtonState = (function () {
